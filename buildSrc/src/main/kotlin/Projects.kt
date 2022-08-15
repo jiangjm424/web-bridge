@@ -26,6 +26,9 @@ fun Project.setupLibraryModule(
     buildFeatures {
         viewBinding = true
     }
+    defaultConfig {
+        consumerProguardFiles("consumer-rules.pro")
+    }
     if (publish) {
         if (document) apply(plugin = "org.jetbrains.dokka")
         apply(plugin = "com.vanniktech.maven.publish.base")

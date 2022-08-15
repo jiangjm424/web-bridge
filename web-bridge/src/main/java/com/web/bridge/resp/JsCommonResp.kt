@@ -3,7 +3,7 @@ package com.web.bridge.resp
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 
-class JsCommonResp<T>(
+data class JsCommonResp<T>(
     @SerializedName(value = "ret")
     var ret: Int,
     @SerializedName(value = "errMsg")
