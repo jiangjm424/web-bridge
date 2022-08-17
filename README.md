@@ -8,21 +8,21 @@ val f = WebFragment.newInstance(url)
 supportFragmentManager.beginTransaction().add(R.id.container, f).commitAllowingStateLoss()
 
 ```
-####gradle 引入
+#### gradle 引入
 由于本项目依赖了agentWeb，而其所在仓库是jitpack.io，所以我们在使用时除了需要默认的mavencenter(), 需要另外引入jitpack
 ```gralde
 
 allprojects {
 	repositories {
 		...
-		mavenCenterl()
+		mavenCentral()
 		maven { url 'https://jitpack.io' }
 	}
 }
 
 ```
 
-####相关
+#### 相关
 ```
 https://github.com/Justson/AgentWeb
 ```
