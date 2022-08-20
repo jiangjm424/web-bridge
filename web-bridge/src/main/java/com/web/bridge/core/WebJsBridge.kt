@@ -54,42 +54,22 @@ class WebJsBridge(
                 } else if (rotation < 10 || rotation > 350) {
                     if (orientationFlag != 1) {
                         Log.d(TAG, " 1 for normal portrait : $rotation");
-                        agentWeb.jsAccessEntrace?.quickCallJs(
-                            "bridge.onEvent",
-                            "orientationChanged",
-                            "{\"orientation\":\"PORTRAIT\"}"
-                        )
                         orientationFlag = 1
                     }
                 } else if (rotation in 81..99) {
                     if (orientationFlag != 4) {
                         Log.d(TAG, "  4 for reverse landscape:$rotation");
-                        agentWeb.jsAccessEntrace?.quickCallJs(
-                            "bridge.onEvent",
-                            "orientationChanged",
-                            "{\"orientation\":\"LANDSCAPE\"}"
-                        )
                         orientationFlag = 4
                     }
 
                 } else if (rotation in 171..189) {
                     if (orientationFlag != 3) {
                         Log.d(TAG, "3 for reverse portrait : $rotation");
-                        agentWeb.jsAccessEntrace?.quickCallJs(
-                            "bridge.onEvent",
-                            "orientationChanged",
-                            "{\"orientation\":\"PORTRAIT\"}"
-                        )
                         orientationFlag = 3
                     }
                 } else if (rotation in 261..279) {
                     if (orientationFlag != 2) {
                         Log.d(TAG, "2 for normal landscape : $rotation");
-                        agentWeb.jsAccessEntrace?.quickCallJs(
-                            "bridge.onEvent",
-                            "orientationChanged",
-                            "{\"orientation\":\"LANDSCAPE\"}"
-                        )
                         orientationFlag = 2
                     }
 
@@ -113,8 +93,8 @@ class WebJsBridge(
                 plugins.putIfAbsent(clazz, obj)
                 obj
             } catch (ex: ClassNotFoundException) {
-                plugins[CLAZZ_UNKNOWN_PLUGIN].also {
-                    it?.errMsg = clazz
+                plugins[CLAZZ_UNKNOWN_PLUGIN]?.also {
+                    it.errMsg = clazz
                 }
             }
         }
@@ -133,18 +113,8 @@ class WebJsBridge(
         Log.i(TAG, "resp:$resp")
     }
 
-    //check 应用打开的网页是指定的。以qq为例 ，后面再换
-    //注意： 该方式只能检查首次打开h5时传入进来的url,如果是通过url内部的超链接跳转出去后，此时检测时仍使用首次打开的地址
-    //eg: 首次打开fcb.bao.agency时，在h5内跳转到baidu.com。
-    //那么如果baidu.com中也调用了postMessage的方法，那么他是能够调用成功的
     //todo 后续再考虑这个安全规则
     private fun safeCheck(): Boolean {
-//        val url = URL(currentUrl)
-//        val isSafePage = url.protocol == "https" && url.host.endsWith("qq.com")
-//        if (!isSafePage) {
-//            Log.e(TAG, "current url is not special page, check failed, current url $currentUrl")
-//        }
-        //todo 暂时放开，后面再定规则
         return true
     }
 
