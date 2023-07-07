@@ -22,10 +22,38 @@ class TestPlugin3(activity: AppCompatActivity) : AbsPlugin(activity) {
     }
 }
 ```
+在插件子类中我们更新了一个gradle插件，更加方便的用于实现插件类，而不用再去处理方法
+```
+//可以使用插件来自动生成规范的 dispatchJsEvent 方法，插件使用方式如下：
+ *root/build.gradle.kts
+ buildscript {
+    ......
+    dependencies {
+        classpath("io.github.jiangjm424:jsbridge-gradle-plugin:1.0.0-SNAPSHOT")
+    }
+ }
+ //app/lib下的build.gradle.kts
+  plugins {
+    ......
+    id("jm.droid.plugin.jsbridge")
+  }
 
+ 之后插件会收集的方法：一个参数或者三个参数的public final，插件处理方法的原则是：
+ 1、方法没有返回值，则返回值ret=ERR_ASYNC，并且用户需要自己去回调js方法（如果需要）
+ 2、方法有返回值，同步执行后返回对应的json串
+ 建议按以下三种方法
+ 1、 fun(param:String):T
+     只有一个参数时必须带返回值，这样可以直接同步返回到js
+ 2、 fun(param:String,reqId:String?,callback:String?)
+     三个参数时，插件默认用户主动回调了，
+ 3、 fun(param:String,reqId:String?,callback:String?)：T
+     三个参数时，插件默认用户主动回调了，
+
+ 如果需要回调js， 本库提供了一个方便的接口供子类调用：notifyJsCallback(callback: String, resp: String?)
+```
 #### js调用native方法
 ```script
-window.Native.nativeMethod("com.grank.db.demo.plugins.TestPlugin3","null","{\"testUserPlugin\":\"plugin 3\"}","callByAndroidParam");
+window.Native.nativeMethod("com.grank.db.demo.plugins.TestPlugin3","one","null","{\"testUserPlugin\":\"plugin 3\"}","callByAndroidParam");
 ```
 #### gradle 引入
 由于本项目依赖了agentWeb，而其所在仓库是jitpack.io，所以我们在使用时除了需要默认的mavenCentral(), 需要另外引入jitpack
