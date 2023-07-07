@@ -1,11 +1,12 @@
 # Android
 local.properties
-*.DS_Store
+.DS_Store
 
 # Gradle
 .gradle
+captures
+**/.gradle
 build
-**/build
 
 # Intellij
 *.iml

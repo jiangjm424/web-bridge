@@ -1,4 +1,8 @@
 #!/bin/bash
 
-# Build and upload the artifacts to 'mavenCentral'.
-./gradlew publish --no-daemon --no-parallel
+if [[ `git status --porcelain` ]]; then
+  echo "The baseline profile has changed. Commit the changes before publishing."
+else
+    # Build and upload the artifacts to 'mavenCentral'.
+    ./gradlew publish
+fi
