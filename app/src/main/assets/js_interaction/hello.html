@@ -7,81 +7,80 @@
     <meta name="Generator" content="Cocoa HTML Writer">
     <meta name="CocoaVersion" content="1504.76">
     <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    body{
-        padding:0;
-        margin:0;
-    }
-
+        p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+        body{
+            padding:0;
+            margin:0;
+        }
 
 
     </style>
     <link rel="stylesheet" type="text/css" href="./button.css">
     <script type="text/javascript">
 
-  function sendHelloToAndroid() {
-      // body...
-      //console.log("call android")
-      if(window.android!=null&&typeof(window.android)!="undefined"){
-        window.android.callAndroid("你好，Android! ");
-      }else{
-         alert(typeof(window.android));
+        function sendHelloToAndroid() {
+            // body...
+            //console.log("call android")
+            if(window.android!=null&&typeof(window.android)!="undefined"){
+              window.android.callAndroid("你好，Android! ");
+            }else{
+               alert(typeof(window.android));
+            }
+
+        }
+
+        function callByAndroid(){
+            console.log("callByAndroid")
+            alert("Js收到消息");
+            showElement("Js收到消息-->无参方法callByAndroid被调用");
+        }
+
+        function callByAndroidParam(msg1){
+           console.log("callByAndroid_param")
+          alert("Js收到消息："+msg1.errMsg);
+          showElement("Js收到消息-->方法callByAndroidParam被调用,参数:"+msg1);
+
+        }
+        function callByAndroidMoreParams(objs,msg2,msg3){
+
+           alert("Js收到消息："+"id:"+objs.id.toString()+" name:"+objs.name+" age:"+objs.age.toString()+msg2+msg3);
+          showElement("Js收到消息-->方法callByAndroidMoreParam被调用 , 参数1:"+objs+"  参数2:"+msg2+"  参数3:"+msg3);
+           return "ok";
+        }
+
+        function callByAndroidInteraction(msg){
+
+          showElement(msg)
+
+          window.setTimeout(sendHelloToAndroid,1000);
+
+        }
+
+
+        function showElement(msg){
+            var div   =document.getElementById("div_box");  //获取div
+            var ele=document.createElement('h6');    //创建h2元素节点
+            ele.innerHTML=msg;                //设置h2节点的内容
+            div.appendChild(ele);                    //添加子节点ele
+
+
       }
 
-  }
 
-  function callByAndroid(){
-      console.log("callByAndroid")
-      alert("Js收到消息");
-      showElement("Js收到消息-->无参方法callByAndroid被调用");
-  }
+              function testClick1() {
+              alert("123213123")
+                  if(window.Native!=null&&typeof(window.Native)!="undefined"){
 
-  function callByAndroidParam(msg1){
-     console.log("callByAndroid_param")
-    alert("Js收到消息："+msg1.errMsg);
-    showElement("Js收到消息-->方法callByAndroidParam被调用,参数:"+msg1);
+                      alert(window.Native.nativeMethod);
+           console.log(window.Native)
 
-  }
-  function callByAndroidMoreParams(objs,msg2,msg3){
+                      //window.Native.nativeMethod("com.web.bridge.system.TestPlugin1","null","{\"id\":\"222\"}","callByAndroidParam");
+                      window.Native.nativeMethod("jm.droid.sample.jsbridge.jsplugin.TestPlugin","one","null","{\"testUserPlugin\":\"plugin 3\"}","callByAndroidParam");
 
-     alert("Js收到消息："+"id:"+objs.id.toString()+" name:"+objs.name+" age:"+objs.age.toString()+msg2+msg3);
-    showElement("Js收到消息-->方法callByAndroidMoreParam被调用 , 参数1:"+objs+"  参数2:"+msg2+"  参数3:"+msg3);
-     return "ok";
-  }
-
-  function callByAndroidInteraction(msg){
-
-    showElement(msg)
-
-    window.setTimeout(sendHelloToAndroid,1000);
-
-  }
-
-
-  function showElement(msg){
-      var div   =document.getElementById("div_box");  //获取div
-      var ele=document.createElement('h6');    //创建h2元素节点
-      ele.innerHTML=msg;                //设置h2节点的内容
-      div.appendChild(ele);                    //添加子节点ele
-
-
-}
-
-
-        function testClick1() {
-        alert("123213123")
-            if(window.Native!=null&&typeof(window.Native)!="undefined"){
-
-                alert(window.Native.nativeMethod);
-     console.log(window.Native)
-
-                //window.Native.nativeMethod("com.web.bridge.system.TestPlugin1","null","{\"id\":\"222\"}","callByAndroidParam");
-                window.Native.nativeMethod("jm.droid.sample.jsbridge.jsplugin.TestPlugin","one","null","{\"testUserPlugin\":\"plugin 3\"}","callByAndroidParam");
-
-            }else{
-                alert(typeof(window.Native));
-            }
-        }
+                  }else{
+                      alert(typeof(window.Native));
+                  }
+              }
 
 
     </script>

@@ -16,17 +16,16 @@
 
 package jm.droid.lib.bridge.core
 
-import android.hardware.SensorManager
 import android.util.Log
-import android.view.OrientationEventListener
 import android.webkit.JavascriptInterface
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import com.just.agentweb.AgentWeb
-import jm.droid.lib.bridge.iplugin.AbsPlugin
+import jm.droid.lib.bridge.iplugin.AbsJsPlugin
 import jm.droid.lib.bridge.resp.JsApiResult
+import jm.droid.lib.bridge.resp.JsCommonReq
 import jm.droid.lib.bridge.resp.JsErrCode
 import jm.droid.lib.bridge.system.UnknownPlugin
 
@@ -34,8 +33,6 @@ class WebJsBridge(
     private val activity: AppCompatActivity,
     lifecycle: Lifecycle,
     agentWeb: AgentWeb,
-    private val fullscreenHandler: ((fullscreen: Boolean) -> Unit),
-    private val lockScreenOrientationHandler: ((portrait: Boolean) -> Unit),
 ) {
 
     companion object {
@@ -52,54 +49,17 @@ class WebJsBridge(
         }
     }
 
-    private var orientationFlag = 1
-
     init {
         lifecycle.addObserver(lifecycleObserver)
     }
 
-    private val mOrientationListener: Lazy<OrientationEventListener> = lazy {
-        val listener = object : OrientationEventListener(
-            activity.applicationContext,
-            SensorManager.SENSOR_DELAY_NORMAL,
-        ) {
-            override fun onOrientationChanged(rotation: Int) {
-                // 判断四个方向 //1表示正竖屏，2表示正横屏，3表示反竖屏，4表示反横屏
-                if (rotation == -1) {
-                    Log.d(TAG, " phone no rotation : $rotation")
-                } else if (rotation < 10 || rotation > 350) {
-                    if (orientationFlag != 1) {
-                        Log.d(TAG, " 1 for normal portrait : $rotation")
-                        orientationFlag = 1
-                    }
-                } else if (rotation in 81..99) {
-                    if (orientationFlag != 4) {
-                        Log.d(TAG, "  4 for reverse landscape:$rotation")
-                        orientationFlag = 4
-                    }
-                } else if (rotation in 171..189) {
-                    if (orientationFlag != 3) {
-                        Log.d(TAG, "3 for reverse portrait : $rotation")
-                        orientationFlag = 3
-                    }
-                } else if (rotation in 261..279) {
-                    if (orientationFlag != 2) {
-                        Log.d(TAG, "2 for normal landscape : $rotation")
-                        orientationFlag = 2
-                    }
-                }
-            }
-        }
-        listener
-    }
-
     private val jsApiProxy = JsApiProxy(agentWeb)
-    private val plugins = mutableMapOf<String, AbsPlugin>().apply {
+    private val plugins = mutableMapOf<String, AbsJsPlugin>().apply {
         put(CLAZZ_UNKNOWN_PLUGIN, UnknownPlugin(activity, jsApiProxy))
     }
 
     @Synchronized
-    private fun getPlugin(clazz: String): AbsPlugin? {
+    private fun getPlugin(clazz: String): AbsJsPlugin? {
         var plugin = plugins[clazz]
         if (plugin == null) {
             plugin = try {
@@ -108,12 +68,13 @@ class WebJsBridge(
                     AppCompatActivity::class.java,
                     JsApiProxy::class.java,
                 )
-                val obj = constructor.newInstance(activity, jsApiProxy) as AbsPlugin
+                val obj = constructor.newInstance(activity, jsApiProxy) as AbsJsPlugin
+                obj.doConfig()
                 plugins.putIfAbsent(clazz, obj)
                 obj
             } catch (ex: ClassNotFoundException) {
                 val obj = UnknownPlugin(activity, jsApiProxy).apply { errMsg = clazz }
-                plugins.putIfAbsent(clazz, obj)
+                plugins.putIfAbsent(clazz, obj) // 防止不存在的类多次进行反射
                 obj
             }
         }
@@ -137,7 +98,8 @@ class WebJsBridge(
                 "no permission",
             )
         }
-        val resp = getPlugin(clazz)?.dispatchJsEvent(method, reqId, params, callback)
+        val req = JsCommonReq(callback, reqId, params)
+        val resp = getPlugin(clazz)?.dispatchJsEvent(method, req)
         Log.v(TAG, "resp:$resp")
         return resp
     }
@@ -148,10 +110,6 @@ class WebJsBridge(
     }
 
     private fun destroy() {
-        if (mOrientationListener.isInitialized()) {
-            val listener = mOrientationListener.value
-            listener.disable()
-        }
         plugins.forEach { (_, plugin) ->
             plugin.recycle()
         }

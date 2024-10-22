@@ -18,20 +18,22 @@ package jm.droid.lib.bridge.system
 
 import androidx.appcompat.app.AppCompatActivity
 import jm.droid.lib.bridge.core.JsApiProxy
-import jm.droid.lib.bridge.iplugin.AbsPlugin
+import jm.droid.lib.bridge.iplugin.AbsJsPlugin
 import jm.droid.lib.bridge.resp.JsApiResult
+import jm.droid.lib.bridge.resp.JsCommonReq
 import jm.droid.lib.bridge.resp.JsErrCode
 
-class UnknownPlugin(activity: AppCompatActivity, jsApiProxy: JsApiProxy) : AbsPlugin(
+class UnknownPlugin(activity: AppCompatActivity, jsApiProxy: JsApiProxy) : AbsJsPlugin(
     activity,
     jsApiProxy,
 ) {
+    override fun onConfig(methods: MutableMap<String, (JsCommonReq) -> String>) {
+    }
+
     override fun dispatchJsEvent(
         method: String,
-        reqId: String?,
-        params: String?,
-        callback: String?,
+        request: JsCommonReq,
     ): String {
-        return JsApiResult.fail(JsErrCode.ERR_NO_PLUGIN, reqId, errMsg ?: "unknown")
+        return JsApiResult.fail(JsErrCode.ERR_NO_PLUGIN, reqId = request.reqId, errMsg ?: "unknown")
     }
 }

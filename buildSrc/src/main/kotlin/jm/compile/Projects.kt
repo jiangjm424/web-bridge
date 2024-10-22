@@ -12,11 +12,16 @@ import com.vanniktech.maven.publish.JavadocJar
 import com.vanniktech.maven.publish.MavenPublishBaseExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
+import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.support.kotlinCompilerOptions
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
+private val JAVA_VERSION = JavaVersion.VERSION_11
+private val JVM_TARGET = JvmTarget.JVM_11
 
 fun Project.setupLibraryModule(
     name: String,
@@ -38,9 +43,34 @@ fun Project.setupLibraryModule(
     action()
 }
 
+/**
+ *   tasks.withType<JavaCompile>().configureEach {
+ *     sourceCompatibility = JavaVersion.VERSION_11.toString()
+ *     targetCompatibility = JavaVersion.VERSION_11.toString()
+ *   }
+ *
+ *   tasks.withType<KotlinCompile>().configureEach {
+ *     kotlinOptions {
+ *       jvmTarget = "11"
+ *       freeCompilerArgs += "-Xjvm-default=all"
+ *       // https://kotlinlang.org/docs/whatsnew13.html#progressive-mode
+ *       freeCompilerArgs += "-progressive"
+ *     }
+ *   }
+ */
 fun Project.setupPluginModule(name: String) {
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "com.vanniktech.maven.publish.base")
+
+    java {
+        sourceCompatibility = JAVA_VERSION.toString()
+        targetCompatibility = JAVA_VERSION.toString()
+    }
+    kotlin {
+        compilerOptions {
+            jvmTarget by JVM_TARGET
+        }
+    }
     setupPublishing {
         configure(GradlePlugin(javadocJar = JavadocJar.Javadoc()))
     }
@@ -108,8 +138,8 @@ private fun <T : BaseExtension> Project.setupBaseModule(
             testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         }
         compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_1_8
-            targetCompatibility = JavaVersion.VERSION_1_8
+            sourceCompatibility = JAVA_VERSION
+            targetCompatibility = JAVA_VERSION
         }
         packagingOptions {
             resources.pickFirsts += listOf(
@@ -134,7 +164,7 @@ private fun <T : BaseExtension> Project.setupBaseModule(
     kotlin {
         compilerOptions {
             allWarningsAsErrors by System.getenv("CI").toBoolean()
-            jvmTarget by JvmTarget.JVM_1_8
+            jvmTarget by JVM_TARGET
 
             val arguments = mutableListOf(
                 // https://kotlinlang.org/docs/compiler-reference.html#progressive
@@ -160,5 +190,9 @@ private fun Project.kotlin(action: KotlinJvmCompile.() -> Unit) {
 }
 
 private fun BaseExtension.lint(action: Lint.() -> Unit) {
-    (this as CommonExtension<*, *, *, *>).lint(action)
+    (this as CommonExtension<*, *, *, *, *, *>).lint(action)
+}
+
+private fun Project.java(action: JavaCompile.() -> Unit) {
+    tasks.withType<JavaCompile>().configureEach(action)
 }

@@ -18,7 +18,6 @@ import jm.compile.setupAppModule
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("jm.droid.plugin.jsbridge")
 }
 setupAppModule(name = "jm.droid.sample.jsbridge") {
     buildTypes {

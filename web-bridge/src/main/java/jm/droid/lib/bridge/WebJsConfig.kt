@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Jmdroid Project
+ * Copyright 2024 The Jmdroid Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-package jm.droid.lib.bridge.iplugin
+package jm.droid.lib.bridge
 
-import jm.droid.lib.bridge.resp.JsCommonReq
+import jm.droid.lib.bridge.core.WebJsBridge
 
-interface JsInvokeBridge {
-    /**
-     * 由h5下发的调用事件
-     * @param method 对应类的方法名
-     * @param reqId  此次请求的id
-     * @param params 请求参数
-     * @param callback 请求回包异常返回
-     */
-    fun dispatchJsEvent(method: String, request: JsCommonReq): String
+object WebJsConfig {
+    var attachNodeName: String = WebJsBridge.ID_JS_OBJ
 }

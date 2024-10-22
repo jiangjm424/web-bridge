@@ -27,6 +27,7 @@ object JsApiResult {
             .add(Unit::class.java, UnitJsonAdapter())
             .build()
 
+    @JvmOverloads
     inline fun <reified T> success(ret: Int = JsErrCode.ERR_OK, reqId: String?, d: T?): String {
         return d.toJsCommResp(moshi, reqId, ret, "Ok")
     }

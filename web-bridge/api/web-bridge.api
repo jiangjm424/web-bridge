@@ -16,8 +16,14 @@ public final class jm/droid/lib/bridge/WebFragment$Companion {
 	public static synthetic fun newInstance$default (Ljm/droid/lib/bridge/WebFragment$Companion;Ljava/lang/String;IIIILjava/lang/Object;)Ljm/droid/lib/bridge/WebFragment;
 }
 
+public final class jm/droid/lib/bridge/WebJsConfig {
+	public static final field INSTANCE Ljm/droid/lib/bridge/WebJsConfig;
+	public final fun getAttachNodeName ()Ljava/lang/String;
+	public final fun setAttachNodeName (Ljava/lang/String;)V
+}
+
 public final class jm/droid/lib/bridge/core/DefaultAgentUiController : com/just/agentweb/AgentWebUIControllerImplBase {
-	public fun <init> (Lkotlin/jvm/functions/Function1;)V
+	public fun <init> (Ljm/droid/lib/bridge/core/MainFrameErrorCallback;)V
 	public fun onMainFrameError (Landroid/webkit/WebView;ILjava/lang/String;Ljava/lang/String;)V
 	public fun onShowMainFrame ()V
 }
@@ -48,6 +54,10 @@ public abstract interface class jm/droid/lib/bridge/core/JsObjectCompact {
 	public abstract fun compactJsObject ()Ljava/util/Map;
 }
 
+public abstract interface class jm/droid/lib/bridge/core/MainFrameErrorCallback {
+	public abstract fun onMainFrameError (Z)V
+}
+
 public abstract interface class jm/droid/lib/bridge/core/WebAbilitiesClient {
 	public fun onOverrideUrlLoading (Landroid/net/Uri;Z)Z
 	public fun onPageFinish (Ljava/lang/String;)V
@@ -57,9 +67,10 @@ public abstract interface class jm/droid/lib/bridge/core/WebAbilitiesClient {
 }
 
 public abstract interface class jm/droid/lib/bridge/core/WebAbilitiesClient$Factory {
-	public fun mainFrameError ()Lkotlin/jvm/functions/Function1;
+	public fun mainFrameError ()Ljm/droid/lib/bridge/core/MainFrameErrorCallback;
 	public fun webAbilitiesClient ()Ljm/droid/lib/bridge/core/WebAbilitiesClient;
 	public fun webChromeClient ()Lcom/just/agentweb/WebChromeClient;
+	public fun webSettingsConfig ()Ljm/droid/lib/bridge/core/WebSettingsConfig;
 	public fun webViewClient ()Lcom/just/agentweb/WebViewClient;
 }
 
@@ -77,7 +88,7 @@ public abstract interface annotation class jm/droid/lib/bridge/core/WebDarkModeS
 public final class jm/droid/lib/bridge/core/WebJsBridge {
 	public static final field Companion Ljm/droid/lib/bridge/core/WebJsBridge$Companion;
 	public static final field ID_JS_OBJ Ljava/lang/String;
-	public fun <init> (Landroidx/appcompat/app/AppCompatActivity;Landroidx/lifecycle/Lifecycle;Lcom/just/agentweb/AgentWeb;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;)V
+	public fun <init> (Landroidx/appcompat/app/AppCompatActivity;Landroidx/lifecycle/Lifecycle;Lcom/just/agentweb/AgentWeb;)V
 	public final fun nativeMethod (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 }
 
@@ -89,6 +100,10 @@ public class jm/droid/lib/bridge/core/WebKeyBoardListener {
 	public fun checkDeviceHasNavigationBar2 (Landroid/content/Context;)Z
 	public fun init (Landroid/app/Activity;)V
 	public fun reset ()V
+}
+
+public abstract interface class jm/droid/lib/bridge/core/WebSettingsConfig {
+	public abstract fun onWebSettingsConfig (Landroid/webkit/WebSettings;)V
 }
 
 public final class jm/droid/lib/bridge/databinding/LayoutErrorBinding : androidx/viewbinding/ViewBinding {
@@ -118,30 +133,50 @@ public final class jm/droid/lib/bridge/databinding/ViewWebContainerBinding : and
 	public static fun inflate (Landroid/view/LayoutInflater;Landroid/view/ViewGroup;Z)Ljm/droid/lib/bridge/databinding/ViewWebContainerBinding;
 }
 
-public abstract class jm/droid/lib/bridge/iplugin/AbsPlugin : jm/droid/lib/bridge/iplugin/JsInvokeBridge {
-	public static final field Companion Ljm/droid/lib/bridge/iplugin/AbsPlugin$Companion;
+public abstract class jm/droid/lib/bridge/iplugin/AbsJsPlugin : jm/droid/lib/bridge/iplugin/JsInvokeBridge {
+	public static final field Companion Ljm/droid/lib/bridge/iplugin/AbsJsPlugin$Companion;
 	public fun <init> (Landroidx/appcompat/app/AppCompatActivity;Ljm/droid/lib/bridge/core/JsApiProxy;)V
-	public fun dispatchJsEvent (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public fun dispatchJsEvent (Ljava/lang/String;Ljm/droid/lib/bridge/resp/JsCommonReq;)Ljava/lang/String;
+	public final fun doConfig ()V
 	protected final fun getActivity ()Landroidx/appcompat/app/AppCompatActivity;
 	public final fun getErrMsg ()Ljava/lang/String;
-	protected final fun getJsApiProxy ()Ljm/droid/lib/bridge/core/JsApiProxy;
-	protected final fun notifyJsCallback (Ljava/lang/String;Ljava/lang/String;)V
+	protected final fun notifyJs (Ljava/lang/String;Ljava/lang/String;)V
+	public abstract fun onConfig (Ljava/util/Map;)V
 	protected fun onRecycle ()V
 	public final fun recycle ()V
 	public final fun setErrMsg (Ljava/lang/String;)V
 }
 
-public final class jm/droid/lib/bridge/iplugin/AbsPlugin$Companion {
+public final class jm/droid/lib/bridge/iplugin/AbsJsPlugin$Companion {
 }
 
 public abstract interface class jm/droid/lib/bridge/iplugin/JsInvokeBridge {
-	public abstract fun dispatchJsEvent (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public abstract fun dispatchJsEvent (Ljava/lang/String;Ljm/droid/lib/bridge/resp/JsCommonReq;)Ljava/lang/String;
 }
 
 public final class jm/droid/lib/bridge/resp/JsApiResult {
 	public static final field INSTANCE Ljm/droid/lib/bridge/resp/JsApiResult;
 	public final fun fail (ILjava/lang/String;Ljava/lang/String;)Ljava/lang/String;
 	public final fun getMoshi ()Lcom/squareup/moshi/Moshi;
+	public final synthetic fun success (Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/String;
+}
+
+public final class jm/droid/lib/bridge/resp/JsCommonReq {
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljm/droid/lib/bridge/resp/JsCommonReq;
+	public static synthetic fun copy$default (Ljm/droid/lib/bridge/resp/JsCommonReq;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Ljm/droid/lib/bridge/resp/JsCommonReq;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCallbackId ()Ljava/lang/String;
+	public final fun getData ()Ljava/lang/String;
+	public final fun getReqId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public final fun setCallbackId (Ljava/lang/String;)V
+	public final fun setData (Ljava/lang/String;)V
+	public final fun setReqId (Ljava/lang/String;)V
+	public fun toString ()Ljava/lang/String;
 }
 
 public final class jm/droid/lib/bridge/resp/JsCommonResp {
@@ -182,8 +217,9 @@ public final class jm/droid/lib/bridge/resp/UnitJsonAdapter : com/squareup/moshi
 	public fun toJson (Lcom/squareup/moshi/JsonWriter;Lkotlin/Unit;)V
 }
 
-public final class jm/droid/lib/bridge/system/UnknownPlugin : jm/droid/lib/bridge/iplugin/AbsPlugin {
+public final class jm/droid/lib/bridge/system/UnknownPlugin : jm/droid/lib/bridge/iplugin/AbsJsPlugin {
 	public fun <init> (Landroidx/appcompat/app/AppCompatActivity;Ljm/droid/lib/bridge/core/JsApiProxy;)V
-	public fun dispatchJsEvent (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
+	public fun dispatchJsEvent (Ljava/lang/String;Ljm/droid/lib/bridge/resp/JsCommonReq;)Ljava/lang/String;
+	public fun onConfig (Ljava/util/Map;)V
 }
 

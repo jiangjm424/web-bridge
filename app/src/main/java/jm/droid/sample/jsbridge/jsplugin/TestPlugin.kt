@@ -19,28 +19,23 @@ package jm.droid.sample.jsbridge.jsplugin
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import jm.droid.lib.bridge.core.JsApiProxy
-import jm.droid.lib.bridge.iplugin.AbsPlugin
+import jm.droid.lib.bridge.iplugin.AbsJsPlugin
 import jm.droid.lib.bridge.resp.JsApiResult
+import jm.droid.lib.bridge.resp.JsCommonReq
 
 class TestPlugin(activity: AppCompatActivity, jsApiProxy: JsApiProxy?) :
-    AbsPlugin(activity, jsApiProxy) {
+    AbsJsPlugin(activity, jsApiProxy) {
 
-    fun one(params: String, reqId: String?, callback: String?) {
-        Log.i("Plugin", "method one")
-        callback?.let {
-            notifyJsCallback(callback, JsApiResult.success(reqId = reqId, d = "adfas"))
+    override fun onConfig(methods: MutableMap<String, (JsCommonReq) -> String>) {
+        methods["one"] = put@{ req: JsCommonReq ->
+            Log.i("Plugin", "method one 2")
+            notifyJs("callByAndroid", JsApiResult.success(0, null, "fdasfa"))
+            return@put JsApiResult.success(0, reqId = req.reqId, "on")
         }
+        methods.put("two", two)
     }
 
-    fun two(params: String): String {
-        return "two"
-    }
-
-    fun three(params: String, reqId: String?, callback: String?): String {
-        val d = "data"
-        callback?.let {
-            notifyJsCallback(it, JsApiResult.success(reqId = reqId, d = d))
-        }
-        return "three"
+    private val two = two@{ req: JsCommonReq ->
+        return@two ""
     }
 }

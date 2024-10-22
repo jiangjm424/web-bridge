@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package jm.droid.lib.bridge.iplugin
+package jm.droid.lib.bridge.resp
 
-import jm.droid.lib.bridge.resp.JsCommonReq
+import com.squareup.moshi.Json
 
-interface JsInvokeBridge {
-    /**
-     * 由h5下发的调用事件
-     * @param method 对应类的方法名
-     * @param reqId  此次请求的id
-     * @param params 请求参数
-     * @param callback 请求回包异常返回
-     */
-    fun dispatchJsEvent(method: String, request: JsCommonReq): String
-}
+data class JsCommonReq(
+    @Json(name = "callbackId")
+    var callbackId: String?,
+    @Json(name = "reqId")
+    var reqId: String?,
+    @Json(name = "data")
+    var data: String?, // h5传参数，可以为空，也可以为json串，也可以直接是字符串，由实际业务确认即可，此处框架直接透传
+)

@@ -17,9 +17,7 @@
 package jm.droid.lib.bridge
 
 import android.content.Context
-import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -67,10 +65,12 @@ class WebFragment : Fragment() {
     }
 
     private val targetUrl by lazy {
-        arguments?.getString(ARGUMENT_KEY_WEB_URL) ?: "http://m.jd.com"
+        arguments?.getString(ARGUMENT_KEY_WEB_URL)
+            ?: throw IllegalArgumentException("no url found in parameter")
     }
     private val webIndicator by lazy {
-        arguments?.getInt(ARGUMENT_KEY_WEB_INDICATOR, R.color.web_indicator) ?: R.color.web_indicator
+        arguments?.getInt(ARGUMENT_KEY_WEB_INDICATOR, R.color.web_indicator)
+            ?: R.color.web_indicator
     }
     private val errorLayout by lazy {
         arguments?.getInt(ARGUMENT_KEY_ERROR_LAYOUT, R.layout.layout_error) ?: R.layout.layout_error
@@ -154,9 +154,6 @@ class WebFragment : Fragment() {
         super.onDestroyView()
         mAgentWeb?.webCreator?.webView?.removeJavascriptInterface(WebJsBridge.ID_JS_OBJ)
         mAgentWeb?.webLifeCycle?.onDestroy()
-//        mAgentWeb?.webCreator?.webView?.let {
-//            WebViewCacheManager.recycle(it)
-//        }
         _binding = null
     }
 
@@ -199,22 +196,12 @@ class WebFragment : Fragment() {
             activity = requireActivity() as AppCompatActivity,
             lifecycle = viewLifecycleOwner.lifecycle,
             agentWeb = agent,
-            fullscreenHandler = {
-                Log.d(TAG, "fullscreen.")
-            },
-            lockScreenOrientationHandler = { partial ->
-                activity?.requestedOrientation = if (partial) {
-                    ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-                } else {
-                    ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-                }
-            },
         )
         jsObjectCompact?.compactJsObject()?.forEach { (key, js) ->
             agent.jsInterfaceHolder?.addJavaObject(key, js)
         }
         agent.jsInterfaceHolder?.addJavaObject(
-            WebJsBridge.ID_JS_OBJ,
+            WebJsConfig.attachNodeName,
             webJsBridge,
         ) // js中可以通过WebJsBridge.ID_JS_OBJ调用native代码
     }
